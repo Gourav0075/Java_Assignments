@@ -1,0 +1,99 @@
+import java.io.FileOutputStream;
+import java.util.Scanner;
+import java.io.*;
+
+class PatientoutputStream extends ObjectOutputStream {
+
+	public PatientoutputStream(OutputStream out) throws IOException {
+		super(out);
+		// TODO Auto-generated constructor stub
+	}
+
+	protected void writeStreamHeader() {
+	}
+
+}
+
+public class Hospital {
+
+	public static void main(String[] args) {
+		int count=0;
+
+		try {
+			Scanner sc = new Scanner(System.in);
+			
+			System.out.println("enter patient name :");
+			String a = sc.next();
+			System.out.println("enter patient ID :");
+			int b = sc.nextInt();
+			System.out.println("enter patient address :");
+			String c = sc.next();
+			System.out.println("enter patient mobile :");
+			int d = sc.nextInt();
+			
+			Patient p = new Patient();
+			p.getdata(a, b, c, d);
+			File f = new File("D:\\JAVA CODES\\IO Serialization LAB/HMS.txt");
+			FileOutputStream fo = new FileOutputStream(f, true);
+			
+			if (f.length() <= 0) {
+				ObjectOutputStream o = new ObjectOutputStream(fo);
+				o.writeObject(p);// calls write stream header
+				o.close();
+			} else {
+				PatientoutputStream ps = new PatientoutputStream(fo);
+				ps.writeObject(p);// it will call its own class write stream header
+				// and that is empty
+				// means it will not write header if file already exists
+				++count;
+			}
+			
+			ObjectInputStream oi = new ObjectInputStream(new FileInputStream(f));
+			do {
+				p = (Patient)oi.readObject();
+				p.disp();
+				System.out.println(count);
+			} while (p != null);
+		} catch (Exception e) {
+		}
+
+	}
+
+}
+
+
+
+import java.io.Serializable;
+import java.util.Scanner;
+
+/*
+ Q design class patient having fileds like patientname, pid ,address , mobile 
+2) create getdata that takes input from user through scanner 
+3) create display method that show all data on console
+ */
+
+public class Patient implements Serializable {
+	String pname;
+	int pid;
+	String add;
+	int mobile;
+	static int count;
+
+	void getdata(String p, int i, String d, int m) {
+
+		this.pname = p;
+		this.pid = i;
+		this.add = d;
+		this.mobile = m;
+		count = ++count;
+	}
+
+	void disp() {
+		System.out.println(pname);
+		System.out.println(pid);
+		System.out.println(add);
+		System.out.println(mobile);
+		
+	}
+
+}
